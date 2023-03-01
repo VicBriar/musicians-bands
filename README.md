@@ -18,12 +18,12 @@ We will be working on this across multiple days. **You should complete part 1 on
 
 ### TODOs: Database Creation and Tests
 - Code in all the spots where it says TODO in the project (you can [search across files](https://code.visualstudio.com/docs/editor/codebasics#_search-across-files) to find the spots to edit!). Below are the instructions:
-  - Create the new sequelize connection
-  - Define the Band model
-  - Define the Musician model
+  X Create the new sequelize connection
+  X Define the Band model
+  X Define the Musician model
   - Test creating a band
   - Test creating a musician
-- **TIP**: When testing your code you will need to first create and band or musician and then verify that it has been added. For example, a test with a User database, may look something like:
+- **TIP**: When testing your code you will need to first create a band or musician and then verify that it has been added. For example, a test with a User database, may look something like:
 ```javascript
 test('can create a Band', async () => {
     const testUser = await User.create({ name: 'George', password: '123' });
