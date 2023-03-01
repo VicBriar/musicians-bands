@@ -21,8 +21,8 @@ We will be working on this across multiple days. **You should complete part 1 on
   X Create the new sequelize connection
   X Define the Band model
   X Define the Musician model
-  - Test creating a band
-  - Test creating a musician
+  X Test creating a band
+  X Test creating a musician
 - **TIP**: When testing your code you will need to first create a band or musician and then verify that it has been added. For example, a test with a User database, may look something like:
 ```javascript
 test('can create a Band', async () => {
