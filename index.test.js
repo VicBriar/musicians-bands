@@ -1,5 +1,11 @@
 const {sequelize} = require('./db');
 const {Band, Musician, Song} = require('./index')
+//Florence + The Machine, indie-rock
+//Glass Animals, pop-rock
+//Florence Welch, vocalist
+//Dave Bayley, vocalist
+//Heaven is Here 2022
+//King 2022
 
 describe('Band and Musician Models', () => {
     
@@ -25,10 +31,14 @@ describe('Band and Musician Models', () => {
         testBand.addMusician(testMusician);
         expect(testMusician.name).toBe("Dorothy Miranda Clark");
         expect(testMusician.instrument).toBe("Voice");
+        const florence //i am here
     });
 
     test('can create a Song', async () => {
-        
+        const testSong = await Song.create({title: "She", year: 2019})
+        expect(testSong.title).toBe("She")
+        expect(testSong.year).toBe(2019)
+        expect(await testSong.countBands()).toBe(0)
     })
     test('can update Band', async () => {
         const testBand1 = await Band.create({name: "lankinPirk", genre: "roock", showCount: 100})
@@ -57,6 +67,21 @@ describe('Band and Musician Models', () => {
         expect(testMusician1.name).toBe("Rob Bourdon");
         expect(testMusician1.instrument).toBe("Drums");
     });
+
+    test('Can update a Song', async () => {
+        const inTheEnd = await Song.create({title: "In The End", year: 1996})
+        const HeavenIsHere = await Song.create({title: "Heaven is Here", year: 2022})
+        const King = await Song.create({title: "King", year: 2022})
+        const inTheEndId = inTheEnd.id;
+        inTheEnd.year = 2001;
+        expect(inTheEnd.year).toBe(2001);
+        await inTheEnd.addBand(2);
+        const LinkinPark = await Band.findByPk(2);
+        expect(await LinkinPark.countSongs()).toBe(1)
+        const linkinParkSongs = await LinkinPark.getSongs()
+        expect(linkinParkSongs[0].title).toBe("In The End")
+
+    })
     test('can destroy Band', async () => {
         const testBand2 = await Band.create({name: "lankinPirk", genre: "roock"})
         const id = testBand2.id;
