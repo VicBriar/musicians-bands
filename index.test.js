@@ -21,6 +21,8 @@ describe('Band and Musician Models', () => {
     test('can create a Musician', async () => {
         // TODO - test creating a musician
         const testMusician = await Musician.create({name: "Dorothy Miranda Clark", instrument: "Voice"})
+        const testBand = await Band.findByPk(1)
+        testBand.addMusician(testMusician);
         expect(testMusician.name).toBe("Dorothy Miranda Clark");
         expect(testMusician.instrument).toBe("Voice");
     });
@@ -44,12 +46,16 @@ describe('Band and Musician Models', () => {
             name: "Rob Bourdon",
             instrument: "Drums",
         });
+        //finding band that has musician
+        const testBand1 = await Band.findByPk(2);
+        //assigning Musician to band
+        testBand1.addMusician(testMusician1);
         await testMusician1.save();
         expect(testMusician1.name).toBe("Rob Bourdon");
         expect(testMusician1.instrument).toBe("Drums");
     });
-    test('can Destroy Band', async () => {
-        const testBand2 = await Band.create({name: "lankinPirk", genre: "roock", showCount: 100})
+    test('can destroy Band', async () => {
+        const testBand2 = await Band.create({name: "lankinPirk", genre: "roock"})
         const id = testBand2.id;
         await testBand2.destroy();
         const band2 = await Band.findByPk(id);
@@ -57,15 +63,33 @@ describe('Band and Musician Models', () => {
         expect(band2).toBe(null);
 
     })
-    test('can destory Musician',async () => {
-        const testMusician2 = await Musician.create({name: "Rab Bourdon", instrument: "Drumies"})
+    test('can destroy Musician',async () => {
+        let testMusician2 = await Musician.create({name: "Rab Bourdon", instrument: "Drumies"})
         const id = testMusician2.id;
         await testMusician2.destroy()
-        const musician2 = await Musician.findByPk(id)
+        testMusician2 = await Musician.findByPk(id)
 
-        expect(musician2).toBe(null);
+        expect(testMusician2).toBe(null);
 
     })
 
-        
+    test('Musician belongs to Band',async () => {
+        const testMusician = await Musician.findByPk(1)
+        const testBand = await Band.findByPk(1)
+        const hasMuscians = await testBand.countMusicians();
+        expect(testMusician.BandId).toBe(1)
+        expect(hasMuscians).toBe(1)
+        expect(await testBand.hasMusician(testMusician)).toBe(true)
+    })
+
+    test('Band has many Musicians',async () => {
+        const testBand1 = await Band.findByPk(2);
+        const testMusician3 = await testBand1.createMusician({name: "Mike Shinoda", instrument: "Piano"})
+        await testMusician3.save();
+        await testBand1.save();
+        expect(testMusician3.BandId).toBe(2)
+        expect(await testBand1.countMusicians()).toBe(2);
+        expect(await testBand1.hasMusician(testMusician3)).toBe(true);
+    })
+
 })
