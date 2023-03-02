@@ -1,9 +1,9 @@
-const {Sequelize, sequelize, DataTypes} = require('./db');
+const {Sequelize, sequelize, DataTypes} = require('../db');
 
 // TODO - define the Band model
 let Band = sequelize.define("Band",{
-    name: DataTypes.TEXT,
-    genre: DataTypes.TEXT,
+    name: DataTypes.STRING,
+    genre: DataTypes.STRING,
     showCount: {
         type: DataTypes.INTEGER,
         defaultValue: 0
