@@ -31,7 +31,14 @@ describe('Band and Musician Models', () => {
         testBand.addMusician(testMusician);
         expect(testMusician.name).toBe("Dorothy Miranda Clark");
         expect(testMusician.instrument).toBe("Voice");
-        const florence //i am here
+        //assigning foreign id's
+        const florence = await Musician.create({name: "Florence Welch", instrument: "voice"})
+        const dave = await Musician.create({name: "Dave Bayley", instrument: "voice"})
+        const glassAnimals = await Band.create({name: "Glass Animals", genre: "pop-rock"})
+        const florenceandtheMachine = await Band.create({name: "Florence + The Machine", genre: "inide-rock"})
+        florenceandtheMachine.addMusician(florence);
+        glassAnimals.addMusician(dave);
+        testBand.addMusician(testMusician);
     });
 
     test('can create a Song', async () => {
@@ -60,7 +67,7 @@ describe('Band and Musician Models', () => {
             instrument: "Drums",
         });
         //finding band that has musician
-        const testBand1 = await Band.findByPk(2);
+        const testBand1 = await Band.findByPk(4);
         //assigning Musician to band
         testBand1.addMusician(testMusician1);
         await testMusician1.save();
@@ -71,15 +78,19 @@ describe('Band and Musician Models', () => {
     test('Can update a Song', async () => {
         const inTheEnd = await Song.create({title: "In The End", year: 1996})
         const HeavenIsHere = await Song.create({title: "Heaven is Here", year: 2022})
-        const King = await Song.create({title: "King", year: 2022})
-        const inTheEndId = inTheEnd.id;
+        florenceandtheMachine = await Band.findOne({where: {name: "Florence + The Machine"}})
+        await florenceandtheMachine.createSong({title: "King", year: 2022})
         inTheEnd.year = 2001;
         expect(inTheEnd.year).toBe(2001);
-        await inTheEnd.addBand(2);
-        const LinkinPark = await Band.findByPk(2);
+        await inTheEnd.addBand(4);
+        await HeavenIsHere.addBand(2);
+        await HeavenIsHere.addBand(3);
+        const LinkinPark = await Band.findByPk(4);
         expect(await LinkinPark.countSongs()).toBe(1)
         const linkinParkSongs = await LinkinPark.getSongs()
         expect(linkinParkSongs[0].title).toBe("In The End")
+        await inTheEnd.save()
+
 
     })
     test('can destroy Band', async () => {
@@ -96,9 +107,29 @@ describe('Band and Musician Models', () => {
         const id = testMusician2.id;
         await testMusician2.destroy()
         testMusician2 = await Musician.findByPk(id)
-
         expect(testMusician2).toBe(null);
 
+    })
+    test('can destroy a song', async () => {
+        let linkinPark = await Band.findAll({
+                where: {
+                    name: "Linkin Park"
+                }
+        })
+        let inTheEnd = await Song.findAll({
+                where: {
+                    title: "In The End"
+                }
+        })
+        //find returns and array of objects, so I need the first, (and only) object
+        inTheEnd = inTheEnd[0]
+        //i need the id so I don't have to use find all again
+        inTheEndid = inTheEnd.id
+        //destroys the instance in the DATATBASE but not in the JS
+        await inTheEnd.destroy()
+        //updating intheend to reflect the database's items
+        inTheEnd = await Song.findByPk(inTheEndid)
+        expect(inTheEnd).toBe(null)
     })
 
     test('Musician belongs to Band',async () => {
@@ -111,13 +142,28 @@ describe('Band and Musician Models', () => {
     })
 
     test('Band has many Musicians',async () => {
-        const testBand1 = await Band.findByPk(2);
+        const testBand1 = await Band.findByPk(4);
         const testMusician3 = await testBand1.createMusician({name: "Mike Shinoda", instrument: "Piano"})
         await testMusician3.save();
         await testBand1.save();
-        expect(testMusician3.BandId).toBe(2)
+        expect(testMusician3.BandId).toBe(4)
         expect(await testBand1.countMusicians()).toBe(2);
         expect(await testBand1.hasMusician(testMusician3)).toBe(true);
+    })
+
+    test('Song belongs to many bands, bands belong to many songs', async () => {
+        florenceandtheMachine = await Band.findOne({
+                where: {
+                    name: "Florence + The Machine"
+                }
+        })
+        glassAnimals = await Band.findOne({
+            where: {
+                name: "Glass Animals"
+            }
+        })
+        expect(await florenceandtheMachine.countSongs()).toBe(2)
+        expect(await glassAnimals.countSongs()).toBe(1)
     })
 
 })
