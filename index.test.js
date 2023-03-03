@@ -165,5 +165,14 @@ describe('Band and Musician Models', () => {
         expect(await florenceandtheMachine.countSongs()).toBe(2)
         expect(await glassAnimals.countSongs()).toBe(1)
     })
+    test('using eager loadng', async () =>{
+        const dodie = await Band.findOne(
+            {include: [{model: Musician}]},
+            {where: {name: "dodie"}}
+        )
+        expect(typeof dodie).toBe("object")
+        expect(dodie.Musicians.length).toBe(1)
+
+    })
 
 })
